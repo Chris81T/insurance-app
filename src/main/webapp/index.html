@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!--[if IE 8]> 				 <html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+
+<head>
+	<meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Foundation 4</title>
+
+  <link rel="stylesheet" href="css/normalize.css" />
+  
+  <link rel="stylesheet" href="css/foundation.css" />
+  
+
+  <script src="js/vendor/custom.modernizr.js"></script>
+
+</head>
+<body class="lift:content_id=main">
+
+  <div id="main" data-lift="surround?with=default;at=content" ng-app="InsuranceApp">
+	
+  <div data-lift="tail">
+	<div data-lift="Insurance.dialog" id="newContractModal" class="reveal-modal">
+	  <a class="close-reveal-modal">&#215;</a>
+	  <h4 class="subheader">Add new contract</h4>
+	  <input type="text" placeholder="Name" id="contract-name"/>
+	  <input type="text" placeholder="Description" id="description"/>
+	  <button class="button expand" name="createContract">Create</button>
+	</div>
+	
+	<script>
+	
+		var custId = null; // dirty hacking
+		function getNewContractValues() {
+			return {
+				customerId:  custId, 
+				contractName: $("#contract-name").val(),
+				description:  $("#description").val() 
+			}
+		}
+		
+		function clientResponseCmd(values) {
+			var scope = angular.element("#insurance-controller").scope();
+			var contractsOfCustomer = scope.contractsOfCustomer;
+			if (contractsOfCustomer != null && contractsOfCustomer.id == values.customerId) {
+				scope.$apply(function() {
+					scope.contracts.push(values.contract);					
+				})
+			}
+			$("#newContractModal").foundation('reveal', 'close');
+		}
+	</script>
+	
+  </div>
+			
+	<div id="insurance-controller" class="row" ng-controller="InsuranceController">				
+		
+		<div class="large-6 columns">
+			<h3 class="subheader">Customers</h3>
+			<div class="row" ng-repeat="customer in customers">
+				<div class="large-6 columns">
+					{{customer.name}}
+				</div>
+				<div class="large-3 columns">
+					<button class="tiny button" ng-click="newContract(customer)">NEW</button>
+				</div>
+				<div class="large-3 columns">
+					<button class="tiny button" ng-click="showContracts(customer)">SHOW</button>
+				</div>
+			</div>
+		</div>
+		
+		<div class="large-6 columns" ng-show="contractsOfCustomer">
+			<h3 class="subheader">Contracts of {{contractsOfCustomer.name}}</h3>
+			<h5 class="subheader" ng-hide="contracts.length > 0">No contracts exist</h5>
+			<div class="row" ng-repeat="contract in contracts">
+				<div class="large-3 columns">
+					<strong>{{contract.name}}</strong>
+				</div>
+				<div class="large-6 columns">
+					<small>{{contract.description}}</small>
+				</div>
+				<div class="large-3 columns">
+					{{fuzzyTime(contract.creationTime)}}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+	
+	angular.module('InsuranceApp', ['ngResource']);	
+	
+  function InsuranceController($scope, $http, $resource) {
+	
+	$scope.contracts = [];  
+	$scope.contractsOfCustomer = null;
+	
+    $http({method: 'GET', url: 'insurance/customers'}).
+    success(function(data, status, headers, config) {
+    	  $scope.customers = data;
+    }).
+    error(function(data, status, headers, config) {
+    	alert("error");
+    });
+	    
+    $scope.newContract = function(customer) {
+	 	custId = customer.id;
+	 	$('#newContractModal').foundation('reveal', 'open');
+	}
+  
+    $scope.showContracts = function(customer) {
+    	$scope.contractsOfCustomer = customer;    	
+		$scope.contracts = $resource('insurance/contracts/customer/:id').query({id: customer.id});
+    }
+    
+    $scope.fuzzyTime = function(time) {
+    	return moment(time).fromNow();
+    }
+  }
+  </script>
+  
+  
+  
+  
+  </div>   	
+  
+
+  <script src="js/foundation.min.js"></script>
+  <!--
+  
+  <script src="js/foundation/foundation.js"></script>
+  
+  <script src="js/foundation/foundation.alerts.js"></script>
+  
+  <script src="js/foundation/foundation.clearing.js"></script>
+  
+  <script src="js/foundation/foundation.cookie.js"></script>
+  
+  <script src="js/foundation/foundation.dropdown.js"></script>
+  
+  <script src="js/foundation/foundation.forms.js"></script>
+  
+  <script src="js/foundation/foundation.joyride.js"></script>
+  
+  <script src="js/foundation/foundation.magellan.js"></script>
+  
+  <script src="js/foundation/foundation.orbit.js"></script>
+  
+  <script src="js/foundation/foundation.placeholder.js"></script>
+  
+  <script src="js/foundation/foundation.reveal.js"></script>
+  
+  <script src="js/foundation/foundation.section.js"></script>
+  
+  <script src="js/foundation/foundation.tooltips.js"></script>
+  
+  <script src="js/foundation/foundation.topbar.js"></script>
+  
+  -->
+  
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+</html>
