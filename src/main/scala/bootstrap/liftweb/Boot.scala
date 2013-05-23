@@ -4,13 +4,14 @@ import net.liftweb._
 import common._
 import http._
 import sitemap._
-import de.insurrance.rest.ApiResourceHelper
+import de.insurance.rest.ApiResourceHelper
 
 
 class Boot {
   def boot {
+
     // where to search snippet
-    LiftRules.addToPackages("de.insurrance")
+    LiftRules.addToPackages("de.insurance")
 
     // Build SiteMap
     val entries = List(
@@ -34,10 +35,8 @@ class Boot {
     LiftRules.early.append(_.setCharacterEncoding("UTF-8"))
 
     LiftRules.htmlProperties.default.set((r: Req) => new Html5Properties(r.userAgent))
-    
-// 
-//    
-//    LiftRules.dispatch.append(BugHelper) // stateful -- associated with a servlet container session
-    LiftRules.statelessDispatchTable.append(ApiResourceHelper) // stateless -- no session created
+
+    LiftRules.statelessDispatch.append(ApiResourceHelper)
+
   }
 }
