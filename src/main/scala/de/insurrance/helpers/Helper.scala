@@ -12,7 +12,7 @@ object Helper {
     
    def lookupService: InsurranceService = {
 			val initialContext = new InitialContext
-			val bean = initialContext.lookup("java:global/insurrance-app-1.0-SNAPSHOT/InsurranceService!de.insurrance.services.InsurranceService")
+			val bean = initialContext.lookup("java:global/insurance-app-1.0-SNAPSHOT/InsurranceService!de.insurrance.services.InsurranceService")
 			initialContext.close
 			bean.asInstanceOf[InsurranceService]
     }
